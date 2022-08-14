@@ -1,15 +1,21 @@
 const fs = require('fs')
 const uuid = require('uuid')
 
+const regexSeparateKeyAndValue = /(\w+):\s*(?:"([^"]*)"|(\S+))/g
+const regexSpecialCharacters = /[`~!@#$%^&*()_|+\-=?;'",<>\{\}\[\]\\\/]/gi
+
+getDisplayName = (args) => args[0]
+getValueFromArgs = (args) => args[typesMethod.findIndex(item => item.displayName == getDisplayName(args)) + 1]
+
 getJsonFromString = (args) => {
-	const str = (typeof (args) == "string") ? args : getObjectFromArgs(args)
-	const jsonParse = JSON.parse(str)
+	const value = (typeof (args) == "string") ? args : getValueFromArgs(args)
+	const jsonParse = JSON.parse(value)
 
 	return JSON.stringify(jsonParse, undefined, 4)
 }
 
 getJsonFromFile = (args) => {
-	const path = getObjectFromArgs(args)
+	const path = getValueFromArgs(args)
 
 	if (typeof (path) !== "string" || path.trim().length === 0) return "no file selected!"
 
@@ -20,34 +26,41 @@ getJsonFromFile = (args) => {
 	return getJsonFromString(str)
 }
 
+getObjectFromString = (args) => {
+	let obj = {}, values
+
+	while(values = regexSeparateKeyAndValue.exec(args)) { obj[values[1]]=(values[3] || values[2]) }
+
+	return obj
+}
+
 random = (args) => {
 	let returnValue = ""
-	const type = args[0]
+	const displayName = getDisplayName(args)
 	
-	if (type.toLowerCase().includes("uuid")) returnValue = uuid.v4()
-	else if (type.toLowerCase().includes("amount")) {
-		const obj = getObjectFromArgs(args)
+	if (displayName.toLowerCase().includes("uuid")) returnValue = uuid.v4()
+	
+	else if (displayName.toLowerCase().includes("amount")) {
 		
-		if (!obj.includes("min") && !obj.includes("max")) {
-			console.error("The input must contain min and max, as in the example: min: 10.00, max: 1000.00")
+		let value = getValueFromArgs(args)
+		
+		if (!value.includes("min") && !value.includes("max")) {
+			console.error(`The input { ${value} } not contain min and max, as in the example: min: 10.00 max: 1000.00`)
 			return 0.0
 		}
-
-		const str = `{ ${obj.replace('min', '"min"').replace('max', '"max"')} }`
-		const amounts = JSON.parse(str)
-		console.log(obj)
-		console.log(str)
-		console.log(amounts)
 		
-		returnValue = Math.abs(amounts.min + Math.random() * (amounts.max - amounts.min)).toFixed(2)
+		value = value.replace(regexSpecialCharacters, '')
+		const obj = getObjectFromString(value)
+		
+		returnValue = Math.abs( Number(obj.min) + Math.random() * ( Number(obj.max) - Number(obj.min) ) ).toFixed(2)
 	}
+
 	else {}
 
 	return returnValue
 }
 
-
-const testTypeMethods = [
+const typesMethod = [
 	{
 		type: "file",
 		displayName: "Schema File",
@@ -57,14 +70,14 @@ const testTypeMethods = [
 	{
 		type: "string",
 		displayName: "Schema Inline",
-		discription: "Raw text input from a file",
+		discription: "Raw text input from a string",
 		defaultValue: "{}",
 		method: (args) => getJsonFromString(args)
 	},
 	{
 		type: "enum",
 		displayName: "Random UUID",
-		discription: "Only generate random UUID",
+		discription: "Generate just a random UUID",
 		method: (args) => random(args),
 		options: [
 			{
@@ -80,16 +93,16 @@ const testTypeMethods = [
 	{
 		type: "string",
 		displayName: "Random amount",
-		discription: "Only generate values",
-		defaultValue: "min: 0.00, max: 1000.00",
+		discription: "Generate just a random amount",
+		defaultValue: "min: 0.00 max: 1000.00",
 		method: (args) => random(args)
 	}
 ]
 
 populateOptions = (arrayTypes) => arrayTypes.map(key => ( { displayName: key, value: key } ))
 
-populateSubOptions = () =>  testTypeMethods.map(item => {
-	item.hide = (args) => item.displayName != args[0].value
+populateSubOptions = () =>  typesMethod.map(item => {
+	item.hide = (options) => item.displayName != options[0].value
 	return item
 })
 
@@ -100,20 +113,19 @@ runcathing = (callback, args) => {
 		return `error found with arguments: ${args.map( (value, index) => `\nindex: ${index} value: ${value}`)}`
 	} 
 }
-getObjectFromArgs = (args) => args[testTypeMethods.findIndex(item => item.displayName == args[0]) + 1]
 
 module.exports.templateTags = [{
 	name: 'Utils',
 	displayName: 'Utils',
-	description: 'Cat because they took the postman :(',
+	description: 'Utilities for someone who has lost access to another tool',
 	args: [
 		{
 			displayName: 'Type',
 			type: 'enum',
-			options: populateOptions(testTypeMethods.map(item => item.displayName))
+			options: populateOptions(typesMethod.map(item => item.displayName))
 		}
 	]
 	.concat(populateSubOptions()),
 
-	async run(_context, ...args) { return runcathing(() => { return testTypeMethods.find( item => item.displayName == args[0])?.method(args) }, args) }
+	async run(_context, ...args) { return runcathing(() => { return typesMethod.find( item => item.displayName == args[0])?.method(args) }, args) }
 }]
