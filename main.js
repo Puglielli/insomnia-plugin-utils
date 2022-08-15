@@ -1,6 +1,8 @@
 const fs = require('fs')
 const uuid = require('uuid')
 
+const CONTENT_TYPE_JSON = "application/json"
+const regexComments = /\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g
 const regexSeparateKeyAndValue = /(\w+):\s*(?:"([^"]*)"|(\S+))/g
 const regexSpecialCharacters = /[`~!@#$%^&*()_|+\-=?;'",<>\{\}\[\]\\\/]/gi
 
@@ -63,16 +65,29 @@ random = (args) => {
 const typesMethod = [
 	{
 		type: "file",
-		displayName: "Schema File",
-		discription: "Raw text input from a file",
+		displayName: "Schema File - JSON",
+		discription: "Raw text input from a file - Json",
 		method: (args) => getJsonFromFile(args)
 	},
 	{
 		type: "string",
-		displayName: "Schema Inline",
-		discription: "Raw text input from a string",
+		displayName: "Schema Inline - JSON",
+		discription: "Raw text input from a string - Json",
 		defaultValue: "{}",
 		method: (args) => getJsonFromString(args)
+	},
+	{
+		type: "file",
+		displayName: "Schema File - String",
+		discription: "Raw text input from a file",
+		method: (args) => JSON.stringify(getJsonFromFile(args))
+	},
+	{
+		type: "string",
+		displayName: "Schema Inline - String",
+		discription: "Raw text input from a string",
+		defaultValue: "{}",
+		method: (args) => JSON.stringify(getJsonFromString(args))
 	},
 	{
 		type: "enum",
@@ -114,18 +129,37 @@ runcathing = (callback, args) => {
 	} 
 }
 
-module.exports.templateTags = [{
-	name: 'Utils',
-	displayName: 'Utils',
-	description: 'Utilities for someone who has lost access to another tool',
-	args: [
-		{
-			displayName: 'Type',
-			type: 'enum',
-			options: populateOptions(typesMethod.map(item => item.displayName))
-		}
-	]
-	.concat(populateSubOptions()),
+const templateTags = [
+	{
+		name: 'Utils',
+		displayName: 'Utils',
+		description: 'Utilities for someone who has lost access to another tool',
+		args: [
+			{
+				displayName: 'Type',
+				type: 'enum',
+				options: populateOptions(typesMethod.map(item => item.displayName))
+			}
+		]
+		.concat(populateSubOptions()),
+	
+		async run(_context, ...args) { return runcathing(() => { return typesMethod.find( item => item.displayName == args[0])?.method(args) }, args) }
+	}
+]
 
-	async run(_context, ...args) { return runcathing(() => { return typesMethod.find( item => item.displayName == args[0])?.method(args) }, args) }
-}]
+const requestHooks = [
+	(context) => {
+		const body = context.request.getBody()
+		
+		if (body.mimeType === CONTENT_TYPE_JSON) {
+			context.request.setBody(
+				{
+					...body,
+					text: body.text.replace(regexComments, (m, g) => g ? "" : m)
+				}
+			)
+		}
+	}
+]
+
+module.exports = { templateTags, requestHooks }
