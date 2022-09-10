@@ -1,14 +1,50 @@
 {
   "name": "insomnia-plugin-utils",
-  "version": "0.0.1",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Create new functions from arguments passed as key and value or in generic format and generate the values in the result you want",
+  "main": "index.js",
   "insomnia": {
     "name": "utils",
-    "description": ""
+    "description": "Create new functions from arguments passed as key and value or in generic format and generate the values in the result you want",
+    "publisher": {
+      "name": "Puglielli"
+    }
   },
-  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Puglielli/insomnia-plugin-utils.git"
+  },
+  "keywords": [
+    "insomnia",
+    "plugin",
+    "custom",
+    "generate",
+    "random",
+    "json",
+    "string",
+    "converter",
+    "amount",
+    "functions"
+  ],
+  "author": "Puglielli",
+  "license": "MIT (see LICENSE)",
+  "bugs": {
+    "url": "https://github.com/Puglielli/insomnia-plugin-utils/issues"
+  },
+  "homepage": "https://github.com/Puglielli/insomnia-plugin-utils",
   "dependencies": {
     "fs": "^0.0.1-security",
     "uuid": "^8.3.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
   }
 }
