@@ -37,35 +37,35 @@ Use [Template Tags](https://docs.insomnia.rest/insomnia/template-tags) (i.e. CTR
 
 - Structure of the types object.
 
-```
-{
-  type: string,
-  displayName: string,
-  liveDisplayName: string,
-  description: string,
-  method: (context) => (args) => expression,
+  ```
+  {
+    type: string,
+    displayName: string,
+    liveDisplayName: string,
+    description: string,
+    method: (context) => (args) => expression,
 
-  // Only type === 'enum'
-  options: Array<{
-    {
-      displayName: string,
-      value: string
-    }
-  ]
-}
-```
+    // Only type === 'enum'
+    options: Array<{
+      {
+        displayName: string,
+        value: string
+      }
+    ]
+  }
+  ```
 
 ### Example to add new basic type
 
 - Open the file `types-method.js`.
-- Look for the variable `typesMethod`.
+- Look up for the variable `typesMethod`.
 - You can follow the pattern of [insomnia](https://docs.insomnia.rest/insomnia/template-tags) doc itself or duplicate existing types except `Random amount`.
 
 ### Example to add new complex type
 
 - Open the file `types-method.js`.
-- Look for the variable `typesMethod`.
-- Now to create a more complex type like `Random amount`.
+- Look up for the variable `typesMethod`.
+- Now to create one more complex type like `Random amount`.
 
 - Structure type
   ```
