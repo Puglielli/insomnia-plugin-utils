@@ -27,7 +27,7 @@
     "functions"
   ],
   "author": "Puglielli",
-  "license": "MIT (see LICENSE)",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Puglielli/insomnia-plugin-utils/issues"
   },
@@ -46,5 +46,9 @@
     "branches": [
       "main"
     ]
-  }
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "devDependencies": {}
 }
