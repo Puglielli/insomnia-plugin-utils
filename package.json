@@ -4,7 +4,8 @@
   "description": "Create new functions from arguments passed as key and value or in generic format and generate the values in the result you want",
   "main": "index.js",
   "insomnia": {
-    "name": "utils",
+    "name": "utils-generate-tags",
+    "displayName": "Utils Generate tags",
     "description": "Create new functions from arguments passed as key and value or in generic format and generate the values in the result you want",
     "publisher": {
       "name": "Puglielli"
