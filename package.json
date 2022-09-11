@@ -1,6 +1,6 @@
 {
   "name": "insomnia-plugin-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create new functions from arguments passed as key and value or in generic format and generate the values in the result you want",
   "main": "index.js",
   "insomnia": {
