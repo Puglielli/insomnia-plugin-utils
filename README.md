@@ -41,9 +41,9 @@ Use [Template Tags](https://docs.insomnia.rest/insomnia/template-tags) (i.e. CTR
   {
     type: string,
     displayName: string,
-    liveDisplayName: string,
-    description: string,
-    method: (context) => (args) => expression,
+    liveDisplayName?: string,
+    description?: string,
+    method: (args) => expression,
 
     // Only type === 'enum'
     options: Array<{

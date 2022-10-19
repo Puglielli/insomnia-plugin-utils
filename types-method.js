@@ -1,5 +1,6 @@
 const fs = require('fs')
 const uuid = require('uuid')
+const moment = require('moment')
 
 const { SEPARATE_KEY_VALUE, SPECIAL_CHARACTERS } = require('./utils/regex.js')
 
@@ -82,6 +83,16 @@ const random = (args) => {
 	return returnValue
 }
 
+const dateTimeNow = (args) => {
+	let pattern = getArgsValue(args)
+	var now = new Date();
+	
+	const date = moment(now).format(pattern);
+
+	return date
+
+}
+
 const getLiveDisplayName = (args) => {
 	const displayName = getDisplayName(args).value
 	const liveDisplay = typesMethod.filter(type => type.displayName == displayName)[0]?.liveDisplayName || displayName
@@ -140,6 +151,14 @@ const typesMethod = [
 		description: "Generate just a random amount",
 		defaultValue: "min: 0.00 max: 1000.00",
 		method: (args) => random(args)
+	},
+	{
+		type: "string",
+		displayName: "Date Time Now",
+		liveDisplayName: "Date Time Now",
+		description: "Informe Pattern to date format.",
+		defaultValue: "YYYY-MM-DD",
+		method: (args) => dateTimeNow(args)
 	}
 ]
 
